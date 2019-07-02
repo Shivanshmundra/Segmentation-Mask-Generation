@@ -14,13 +14,15 @@ from mrcnn import visualize
 from coco_config import *
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--image_dir', type=str, default='/silocloud/buckets/silo_data/train/A', help='Image dir for mask generation')
+parser.add_argument('--image_dir', type=str, default='./images', help='Image dir for mask generation')
 parser.add_argument('--root_dir', type=str, default='./', help='root directory of project')
-parser.add_argument('--out_dir', type=str, default='/silocloud/buckets/silo_data/mask/A', help='directory of mask to save')
+parser.add_argument('--out_dir', type=str, default='./masks', help='directory of mask to save')
 parser.add_argument('--model_dir', type=str, default="./mask_rcnn_coco.h5", help='Local path to trained weights file')
-parser.add_argument('--object_list', type=list, default=['car', 'truck'], help='objects to segment, to be provided as list of str, should be from class_list')
+# parser.add_argument('--object_list', type= nargs='+', default='car', 'truck', help='objects to segment, to be provided as list of str, should be from class_list')
 parser.add_argument('--is_resize', type=bool, default=False, help='to resize segmented mask')
 parser.add_argument('--resize_dim', type=int, default=256, help='size of the data resize (squared assumed)')
+
+object_list = ['car', 'truck']
 
 args = parser.parse_args()
 print(args)
@@ -50,10 +52,10 @@ model.load_weights(args.model_dir, by_name=True)
 
 
 # get file names from image dir to load
-file_names= [file for file in os.listdir(args.image_dir) if file.endswith('.png')]
+file_names= [file for file in os.listdir(args.image_dir) if file.endswith('.jpg')]
 
 # get id list from class of objects
-id_list = [class_names.index(name) for name in args.object_list]
+id_list = [class_names.index(name) for name in object_list]
 
 # Run detection and save masks
 for file_name in tqdm(file_names):
